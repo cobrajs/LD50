@@ -4,7 +4,7 @@ class_name AStar_Path
 # Most of this code is from AndOne's YouTube video "A* Path-Finding for Grid-Based Tilemap in Godot
 # https://www.youtube.com/watch?v=dVNH6mIDksQ
 
-onready var astar = AStar2D.new()
+onready var astar = DirectionalWeightAStar2D.new()
 onready var used_cells = get_used_cells()
 
 var path : PoolVector2Array
@@ -17,11 +17,7 @@ func _ready():
 
 func _add_points():
 	for cell in used_cells:
-		astar.add_point(id(cell), cell, _get_cell_weight(cell))
-
-
-func _get_cell_weight(cell):
-	return 1.0
+		astar.add_point(id(cell), cell, 1.0)
 
 
 func _connect_points():

@@ -4,11 +4,16 @@ extends AStar_Path
 # https://www.youtube.com/watch?v=dVNH6mIDksQ
 
 onready var car = $Car
+onready var hazards = $Hazards
 
 
 var car_moving = false
 var car_offset = Vector2(8, 0)
 var tile_center = Vector2(8, 8)
+
+
+func _get_point_weight(cell):
+	return 1
 
 
 func _input(event):

@@ -17,9 +17,11 @@ func _ready():
 
 func _add_points():
 	for cell in used_cells:
-		var cell_type = get_cellv(cell)
-		print('Cell: ', cell_type, cell)
-		astar.add_point(id(cell), cell, 1.0)
+		astar.add_point(id(cell), cell, _get_cell_weight(cell))
+
+
+func _get_cell_weight(cell):
+	return 1.0
 
 
 func _connect_points():

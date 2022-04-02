@@ -1,23 +1,24 @@
 extends AStar_Path
 
-# Most of this code is from AndOne's YouTube video "A* Path-Finding for Grid-Based Tilemap in Godot
+# The basis of this code is from AndOne's YouTube video "A* Path-Finding for Grid-Based Tilemap in Godot
 # https://www.youtube.com/watch?v=dVNH6mIDksQ
+# It has been, of course, heavily modified haha
 
 onready var car = $Car
 onready var hazards = $Hazards
-onready var path_shower = $PathShower
 
 var car_moving = false
 var car_offset = Vector2(8, 0)
 var tile_center = Vector2(8, 8)
 
-signal path_weight(weight)
+var road_start: Vector2
+var road_end: Vector2
 
-func _get_cell_weight(cell):
-	var hazard = hazards.get_cellv(cell)
-	if hazard > -1:
-		print("Hazard! ", hazard, cell)
-	return 1
+enum RoadTiles {
+	ROAD = 0,
+	ROAD_START = 1,
+	ROAD_END = 2
+}
 
 
 func _ready():
@@ -56,17 +57,35 @@ func _ready():
 			var next_cell = hazard + direction
 			astar.disconnect_points(id(start_cell), id(next_cell))
 			astar.connect_points(id(start_cell), id(next_cell), false)
-			
+	
+	Events.connect("update_path", self, "_on_Events_update_path")
+	
+	# Find start and ends of road
+	for cell in used_cells:
+		var cell_value = get_cellv(cell)
+		if cell_value == RoadTiles.ROAD_START:
+			road_start = cell
+		if cell_value == RoadTiles.ROAD_END:
+			road_end = cell
+
+func _get_path(from, to):
+	._get_path(from, to)
+	Events.emit_signal("path_weight_updated", get_path_weight(from, to))
+
+
+func get_path_weight(from, to):
+	return astar.get_path_cost(id(from), id(to))
 
 
 func _input(event):
 	if (event is InputEventMouseButton and event.is_pressed() and event.button_index == BUTTON_LEFT) and not car_moving:
+		print(event, get_viewport().get_mouse_position(), get_global_mouse_position(), world_to_map(get_global_mouse_position()))
 		var mouse_position = world_to_map(get_global_mouse_position())
 		if used_cells.has(mouse_position):
 			var car_position = world_to_map(car.global_position)
 			_get_path(car_position, mouse_position)
 			car_moving = true
-			path_shower.clear()
+			Events.emit_signal("show_path", null)
 			move()
 	
 	if event is InputEventMouseButton and event.is_pressed() and event.button_index == BUTTON_RIGHT:
@@ -78,14 +97,7 @@ func _input(event):
 		if used_cells.has(mouse_position):
 			var car_position = world_to_map(car.global_position)
 			_get_path(car_position, mouse_position)
-			draw_path()
-
-
-func draw_path():
-	path_shower.clear()
-	for point in path:
-		path_shower.set_cellv(point, 0)
-	path_shower.update_bitmask_region()
+			Events.emit_signal("show_path", path)
 
 
 func move():
@@ -105,3 +117,9 @@ func move():
 		yield(get_tree().create_timer(0.1), "timeout")
 	
 	car_moving = false
+
+
+func _on_Events_update_path():
+	if road_start and road_end:
+		_get_path(road_start, road_end)
+		Events.emit_signal("show_path", path)

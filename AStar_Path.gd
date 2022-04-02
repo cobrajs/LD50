@@ -31,8 +31,6 @@ func _connect_points():
 
 func _get_path(start, end):
 	path = astar.get_point_path(id(start), id(end))
-	# Remove the first point because we are already there
-	path.remove(0)
 
 
 # Cantor pairing function

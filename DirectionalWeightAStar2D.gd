@@ -24,3 +24,11 @@ func _estimate_cost(from_id, to_id):
 
 func _directional_weight_key(from: int, to: int):
 	return str(from) + ":" + str(to)
+
+
+func get_path_cost(from_id: int, to_id: int):
+	var path = get_id_path(from_id, to_id)
+	var total_cost = 0
+	for point_index in path.size() - 1:
+		total_cost += _compute_cost(path[point_index], path[point_index + 1])
+	return total_cost

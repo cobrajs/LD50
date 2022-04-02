@@ -1,0 +1,19 @@
+[gd_scene format=2]
+
+[node name="LabeledLabel" type="VBoxContainer"]
+margin_right = 40.0
+margin_bottom = 40.0
+
+[node name="Label" type="Label" parent="."]
+margin_right = 45.0
+margin_bottom = 14.0
+text = "Label"
+align = 3
+
+[node name="Output" type="Label" parent="."]
+margin_top = 18.0
+margin_right = 45.0
+margin_bottom = 32.0
+custom_colors/font_color = Color( 0.427451, 0.760784, 0.792157, 1 )
+text = "Output"
+align = 2

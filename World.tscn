@@ -61,6 +61,7 @@ curve = null
 [node name="PathFollow2D" type="PathFollow2D" parent="Path2D"]
 position = Vector2( 12, 85 )
 rotation = 0.0314864
+rotate = false
 loop = false
 
 [node name="Car" type="Sprite" parent="Path2D/PathFollow2D"]

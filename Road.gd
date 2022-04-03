@@ -4,7 +4,6 @@ extends AStar_Path
 # https://www.youtube.com/watch?v=dVNH6mIDksQ
 # It has been, of course, heavily modified haha
 
-onready var car = $Car
 onready var hazards = $Hazards
 
 var car_moving = false
@@ -25,27 +24,25 @@ func _ready():
 	var all_hazards = hazards.get_used_cells()
 	for hazard in all_hazards:
 		var hazard_type = hazards.get_cellv(hazard)
-		var weight = 1.0
+		var hazard_data = Hazards.get_hazard_by_tile_id(hazard_type)
+		var weight = hazard_data["weight"] if hazard_data.has("weight") else 1.0
+		if hazard_data.has("curve_func"):
+			hazard_data["curve_func"].call_func()
+
 		match hazard_type:
-			0: # Pothole
-				weight = 5.0
-			1: # Speed hump
-				weight = 5.0
-			2: # Cones
-				weight = 5.0
-			4: # Stop sign right
+			Hazards.TileIds.STOP_SIGN_RIGHT:
 				astar.add_directional_weight(id(hazard), id(hazard + Vector2.RIGHT), 10.0)
-			5: # Stop sign down
+			Hazards.TileIds.STOP_SIGN_DOWN: # Stop sign down
 				astar.add_directional_weight(id(hazard), id(hazard + Vector2.DOWN), 10.0)
-			6: # Stop sign left
+			Hazards.TileIds.STOP_SIGN_LEFT: # Stop sign left
 				astar.add_directional_weight(id(hazard), id(hazard + Vector2.LEFT), 10.0)
-			7: # Stop sign up
+			Hazards.TileIds.STOP_SIGN_UP: # Stop sign up
 				astar.add_directional_weight(id(hazard), id(hazard + Vector2.UP), 10.0)
 				
 		astar.set_point_weight_scale(id(hazard), weight)
 		
 		# For one-way hazards, only connect the tiles in one direction
-		if hazard_type == 3:
+		if hazard_type == Hazards.TileIds.ONE_WAY:
 			var direction = Vector2.ZERO
 			var one_way_auto = hazards.get_cell_autotile_coord(hazard.x, hazard.y)
 			match int(one_way_auto.x):
@@ -83,25 +80,6 @@ func _input(event):
 		var mouse_position = world_to_map(get_global_mouse_position())
 		print("MOUSE! ", mouse_position)
 	
-
-func move():
-	for point in path:
-		var next_position = map_to_world(point)
-		var car_direction = (next_position - car.global_position).normalized()
-		match car_direction:
-			Vector2.UP:
-				car.frame = 0
-			Vector2.DOWN:
-				car.frame = 3
-			Vector2.LEFT:
-				car.frame = 2
-			Vector2.RIGHT:
-				car.frame = 1
-		car.global_position = next_position + tile_center + car_offset.rotated(car_direction.angle())
-		yield(get_tree().create_timer(0.1), "timeout")
-	
-	car_moving = false
-
 
 func _on_Events_update_path():
 	if road_start and road_end:

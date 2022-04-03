@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=2]
+[gd_scene load_steps=25 format=2]
 
 [ext_resource path="res://ui_theme.tres" type="Theme" id=1]
 [ext_resource path="res://GameView.gd" type="Script" id=2]
@@ -8,6 +8,23 @@
 [ext_resource path="res://ui/HazardButtonBase.tscn" type="PackedScene" id=6]
 [ext_resource path="res://assets/hazard_buttons.png" type="Texture" id=7]
 [ext_resource path="res://assets/cars/car.png" type="Texture" id=8]
+[ext_resource path="res://assets/progress_bar.png" type="Texture" id=9]
+
+[sub_resource type="AtlasTexture" id=12]
+atlas = ExtResource( 9 )
+region = Rect2( 0, 32, 32, 32 )
+
+[sub_resource type="AtlasTexture" id=13]
+atlas = ExtResource( 9 )
+region = Rect2( 32, 32, 32, 32 )
+
+[sub_resource type="AtlasTexture" id=14]
+atlas = ExtResource( 9 )
+region = Rect2( 32, 0, 32, 32 )
+
+[sub_resource type="AtlasTexture" id=15]
+atlas = ExtResource( 9 )
+region = Rect2( 0, 0, 32, 32 )
 
 [sub_resource type="AtlasTexture" id=11]
 atlas = ExtResource( 8 )
@@ -113,80 +130,81 @@ anchor_right = 0.0
 anchor_bottom = 0.0
 margin_top = 64.0
 margin_right = 190.0
-margin_bottom = 128.0
+margin_bottom = 126.0
 
 [node name="Label" parent="RightBar/MarginContainer/VBoxContainer/Traffic" index="0"]
 margin_right = 190.0
 margin_bottom = 28.0
 text = "Traffic"
 
-[node name="ProgressBar" parent="RightBar/MarginContainer/VBoxContainer/Traffic" index="1"]
+[node name="CustomProgress" parent="RightBar/MarginContainer/VBoxContainer/Traffic" index="1"]
 margin_top = 32.0
 margin_right = 190.0
-margin_bottom = 64.0
+margin_bottom = 62.0
 
 [node name="WorhtIt" parent="RightBar/MarginContainer/VBoxContainer" instance=ExtResource( 5 )]
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_top = 132.0
+margin_top = 130.0
 margin_right = 190.0
-margin_bottom = 196.0
+margin_bottom = 192.0
 
 [node name="Label" parent="RightBar/MarginContainer/VBoxContainer/WorhtIt" index="0"]
 margin_right = 190.0
 margin_bottom = 28.0
 text = "Worth It?"
 
-[node name="ProgressBar" parent="RightBar/MarginContainer/VBoxContainer/WorhtIt" index="1"]
+[node name="CustomProgress" parent="RightBar/MarginContainer/VBoxContainer/WorhtIt" index="1"]
 margin_top = 32.0
 margin_right = 190.0
-margin_bottom = 64.0
-min_value = -50.0
-max_value = 50.0
-value = 0.0
+margin_bottom = 62.0
+min_value = -50
+max_value = 50
+value = 0
+min_texture = SubResource( 12 )
+max_texture = SubResource( 13 )
 
 [node name="Residents" parent="RightBar/MarginContainer/VBoxContainer" instance=ExtResource( 5 )]
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_top = 200.0
+margin_top = 196.0
 margin_right = 190.0
-margin_bottom = 264.0
+margin_bottom = 258.0
 
 [node name="Label" parent="RightBar/MarginContainer/VBoxContainer/Residents" index="0"]
 margin_right = 190.0
 margin_bottom = 28.0
 text = "Residents"
 
-[node name="ProgressBar" parent="RightBar/MarginContainer/VBoxContainer/Residents" index="1"]
+[node name="CustomProgress" parent="RightBar/MarginContainer/VBoxContainer/Residents" index="1"]
 margin_top = 32.0
 margin_right = 190.0
-margin_bottom = 64.0
-min_value = -50.0
-max_value = 50.0
-value = 0.0
+margin_bottom = 62.0
+min_value = -50
+max_value = 50
+value = 0
+min_texture = SubResource( 14 )
+max_texture = SubResource( 15 )
 
 [node name="Budget" parent="RightBar/MarginContainer/VBoxContainer" instance=ExtResource( 5 )]
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_top = 268.0
+margin_top = 262.0
 margin_right = 190.0
-margin_bottom = 332.0
+margin_bottom = 324.0
 
 [node name="Label" parent="RightBar/MarginContainer/VBoxContainer/Budget" index="0"]
 margin_right = 190.0
 margin_bottom = 28.0
 text = "Budget"
 
-[node name="ProgressBar" parent="RightBar/MarginContainer/VBoxContainer/Budget" index="1"]
+[node name="CustomProgress" parent="RightBar/MarginContainer/VBoxContainer/Budget" index="1"]
 margin_top = 32.0
 margin_right = 190.0
-margin_bottom = 64.0
-min_value = -50.0
-max_value = 50.0
-value = 0.0
+margin_bottom = 62.0
 
 [node name="ToolButtons" type="GridContainer" parent="RightBar/MarginContainer/VBoxContainer"]
-margin_top = 336.0
+margin_top = 328.0
 margin_right = 190.0
 margin_bottom = 470.0
 size_flags_vertical = 3
@@ -194,21 +212,21 @@ columns = 2
 
 [node name="Path" type="ToolButton" parent="RightBar/MarginContainer/VBoxContainer/ToolButtons"]
 margin_right = 93.0
-margin_bottom = 36.0
+margin_bottom = 28.0
 size_flags_horizontal = 3
 text = "Path"
 
 [node name="Tools" type="ToolButton" parent="RightBar/MarginContainer/VBoxContainer/ToolButtons"]
 margin_left = 97.0
 margin_right = 190.0
-margin_bottom = 36.0
+margin_bottom = 28.0
 size_flags_horizontal = 3
 text = "Tools"
 
 [node name="GoCar" type="ToolButton" parent="RightBar/MarginContainer/VBoxContainer/ToolButtons"]
-margin_top = 40.0
+margin_top = 32.0
 margin_right = 93.0
-margin_bottom = 76.0
+margin_bottom = 60.0
 size_flags_horizontal = 3
 text = "Car"
 icon = SubResource( 11 )

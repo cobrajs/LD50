@@ -3,14 +3,15 @@ extends Control
 
 # Right Bar UI
 onready var path_weight_label = $RightBar/MarginContainer/VBoxContainer/PathWeight/Output
-onready var traffic_bar = $RightBar/MarginContainer/VBoxContainer/Traffic/ProgressBar
+onready var traffic_bar = $RightBar/MarginContainer/VBoxContainer/Traffic/CustomProgress
+onready var worth_it_bar = $RightBar/MarginContainer/VBoxContainer/WorhtIt/CustomProgress
+onready var residents_bar = $RightBar/MarginContainer/VBoxContainer/Residents/CustomProgress
+onready var budget_bar = $RightBar/MarginContainer/VBoxContainer/Budget/CustomProgress
 
 onready var tool_menu = $ToolMenu
 
 func _ready():
 	Events.connect("path_weight_updated", self, "_on_Events_path_weight_updated")
-	
-	traffic_bar.rect_size.y = 32
 
 
 func _notification(what):
@@ -27,10 +28,14 @@ func _on_Events_path_weight_updated(weight: float):
 
 
 func _process(delta):
-	traffic_bar.value += traffic_bar.step * delta
-	
+	traffic_bar.value += traffic_bar.step * delta * 10
+		
 	if traffic_bar.value >= traffic_bar.max_value:
 		traffic_bar.value = traffic_bar.min_value
+	
+	worth_it_bar.value = traffic_bar.value - traffic_bar.max_value / 2
+	residents_bar.value = traffic_bar.value - traffic_bar.max_value / 2
+	budget_bar.value = traffic_bar.value
 
 
 func _on_ToolButton_pressed():

@@ -33,6 +33,7 @@ config/icon="res://icon.png"
 [autoload]
 
 Events="*res://Events.gd"
+Hazards="*res://Hazards.gd"
 
 [display]
 

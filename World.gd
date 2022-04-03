@@ -1,9 +1,11 @@
 extends Control
 
+export(PackedScene) var level
+
 # Game elements
+onready var background = $Background
 onready var path_shower = $PathShower
-onready var road = $Level1/Road
-onready var hazards = $Level1/Road/Hazards
+onready var animation = $AnimationPlayer
 
 onready var car: Sprite = $Path2D/PathFollow2D/Car
 onready var path = $Path2D
@@ -12,10 +14,21 @@ onready var path_follow = $Path2D/PathFollow2D
 var car_moving = false
 var car_angle = 0
 
+var road
+var hazards
+var enabled_hazards: Array
+
+
 func _ready():
 	Events.connect("show_path", self, "_on_Events_show_path")
 	Events.connect("updated_path", self, "_on_Events_update_path")
 	Events.connect("send_car", self, "_on_Events_send_car")
+	Events.connect("load_level", self, "_on_Events_load_level")
+	Events.connect("hazard_tool_changed", self, "_on_Events_tool_changed")
+	
+	if level == null:
+		level = load("res://levels/Level1.tscn")
+	_on_Events_load_level(level)
 
 
 ## Move car along the path
@@ -26,6 +39,8 @@ func _physics_process(delta):
 		path_follow.offset += 200 * delta
 		var new_position = path_follow.get_global_position()
 		car_angle = rad2deg(new_position.angle_to_point(previous_position))
+		if path_follow.unit_offset >= 0.95 and not animation.is_playing():
+			animation.play("HideCar")
 		if path_follow.unit_offset >= 0.99:
 			car_moving = false
 		if car_angle <= 45 and car_angle >= -45: # Right
@@ -56,6 +71,7 @@ func _on_Events_show_path(path: PoolVector2Array):
 
 func _on_Events_send_car():
 	car_moving = true
+	$AnimationPlayer.play("ShowCar")
 	path_follow.unit_offset = 0
 
 
@@ -119,3 +135,12 @@ func _on_Events_update_path(_path):
 		
 	path.curve.add_point(road.map_to_world(_path[_path.size() - 1]) + Vector2(16, 16) + lane_offset + last_direction * 48)
 
+
+func _on_Events_load_level(level):
+	var level_instance = level.instance()
+	background.get_parent().add_child_below_node(background, level_instance)
+	road = level_instance.get_node("Road")
+	hazards = road.get_node("Hazards")
+	
+	enabled_hazards = level_instance.get_enabled_hazards()
+	Events.emit_signal("enabled_hazards", enabled_hazards)

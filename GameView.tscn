@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=2]
+[gd_scene load_steps=20 format=2]
 
 [ext_resource path="res://ui_theme.tres" type="Theme" id=1]
 [ext_resource path="res://GameView.gd" type="Script" id=2]
@@ -28,57 +28,27 @@ region = Rect2( 0, 0, 32, 32 )
 
 [sub_resource type="AtlasTexture" id=11]
 atlas = ExtResource( 8 )
-region = Rect2( 32, 0, 16, 16 )
-
-[sub_resource type="AtlasTexture" id=1]
-resource_local_to_scene = true
-atlas = ExtResource( 7 )
-region = Rect2( 0, 0, 32, 32 )
-
-[sub_resource type="AtlasTexture" id=2]
-resource_local_to_scene = true
-atlas = ExtResource( 7 )
-region = Rect2( 0, 64, 32, 32 )
-
-[sub_resource type="AtlasTexture" id=3]
-resource_local_to_scene = true
-atlas = ExtResource( 7 )
 region = Rect2( 32, 0, 32, 32 )
 
-[sub_resource type="AtlasTexture" id=4]
-resource_local_to_scene = true
-atlas = ExtResource( 7 )
-region = Rect2( 32, 64, 32, 32 )
-
-[sub_resource type="AtlasTexture" id=9]
-resource_local_to_scene = true
-atlas = ExtResource( 7 )
-region = Rect2( 64, 0, 32, 32 )
-
-[sub_resource type="AtlasTexture" id=10]
-resource_local_to_scene = true
-atlas = ExtResource( 7 )
-region = Rect2( 64, 64, 32, 32 )
-
-[sub_resource type="AtlasTexture" id=5]
-resource_local_to_scene = true
-atlas = ExtResource( 7 )
-region = Rect2( 96, 0, 32, 32 )
-
-[sub_resource type="AtlasTexture" id=6]
-resource_local_to_scene = true
-atlas = ExtResource( 7 )
-region = Rect2( 96, 64, 32, 32 )
-
-[sub_resource type="AtlasTexture" id=7]
-resource_local_to_scene = true
+[sub_resource type="AtlasTexture" id=16]
 atlas = ExtResource( 7 )
 region = Rect2( 0, 32, 32, 32 )
 
-[sub_resource type="AtlasTexture" id=8]
-resource_local_to_scene = true
+[sub_resource type="AtlasTexture" id=17]
 atlas = ExtResource( 7 )
-region = Rect2( 0, 96, 32, 32 )
+region = Rect2( 32, 32, 32, 32 )
+
+[sub_resource type="AtlasTexture" id=18]
+atlas = ExtResource( 7 )
+region = Rect2( 64, 32, 32, 32 )
+
+[sub_resource type="AtlasTexture" id=19]
+atlas = ExtResource( 7 )
+region = Rect2( 96, 0, 32, 32 )
+
+[sub_resource type="AtlasTexture" id=20]
+atlas = ExtResource( 7 )
+region = Rect2( 64, 0, 32, 32 )
 
 [node name="GameView" type="Control"]
 anchor_right = 1.0
@@ -141,6 +111,7 @@ text = "Traffic"
 margin_top = 32.0
 margin_right = 190.0
 margin_bottom = 62.0
+value = 19
 
 [node name="WorhtIt" parent="RightBar/MarginContainer/VBoxContainer" instance=ExtResource( 5 )]
 anchor_right = 0.0
@@ -236,41 +207,38 @@ expand_icon = true
 anchor_top = 1.0
 anchor_bottom = 1.0
 margin_top = -32.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
-[node name="GridContainer" type="HBoxContainer" parent="ToolMenu"]
+[node name="ToolsHolder" type="HBoxContainer" parent="ToolMenu"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 
-[node name="PotHole" parent="ToolMenu/GridContainer" instance=ExtResource( 6 )]
-texture_normal = SubResource( 1 )
-texture_pressed = SubResource( 2 )
+[node name="PotHole" parent="ToolMenu/ToolsHolder" instance=ExtResource( 6 )]
+hazard_id = "pothole"
+texture = SubResource( 16 )
 
-[node name="Cones" parent="ToolMenu/GridContainer" instance=ExtResource( 6 )]
+[node name="Cones" parent="ToolMenu/ToolsHolder" instance=ExtResource( 6 )]
 margin_left = 36.0
 margin_right = 68.0
-texture_normal = SubResource( 3 )
-texture_pressed = SubResource( 4 )
+hazard_id = "cones"
+texture = SubResource( 17 )
 
-[node name="SpeedHump" parent="ToolMenu/GridContainer" instance=ExtResource( 6 )]
+[node name="SpeedHump" parent="ToolMenu/ToolsHolder" instance=ExtResource( 6 )]
 margin_left = 72.0
 margin_right = 104.0
-texture_normal = SubResource( 9 )
-texture_pressed = SubResource( 10 )
+hazard_id = "speed_hump"
+texture = SubResource( 18 )
 
-[node name="StopSign" parent="ToolMenu/GridContainer" instance=ExtResource( 6 )]
+[node name="StopSign" parent="ToolMenu/ToolsHolder" instance=ExtResource( 6 )]
 margin_left = 108.0
 margin_right = 140.0
-texture_normal = SubResource( 5 )
-texture_pressed = SubResource( 6 )
+hazard_id = "stop_sign"
+texture = SubResource( 19 )
 
-[node name="OneWay" parent="ToolMenu/GridContainer" instance=ExtResource( 6 )]
+[node name="OneWay" parent="ToolMenu/ToolsHolder" instance=ExtResource( 6 )]
 margin_left = 144.0
 margin_right = 176.0
-texture_normal = SubResource( 7 )
-texture_pressed = SubResource( 8 )
+hazard_id = "one_way"
+texture = SubResource( 20 )
 
 [connection signal="pressed" from="RightBar/MarginContainer/VBoxContainer/ToolButtons/Path" to="." method="_on_ToolButton_pressed"]
 [connection signal="pressed" from="RightBar/MarginContainer/VBoxContainer/ToolButtons/Tools" to="." method="_on_Tools_pressed"]

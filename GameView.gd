@@ -9,9 +9,17 @@ onready var residents_bar = $RightBar/MarginContainer/VBoxContainer/Residents/Cu
 onready var budget_bar = $RightBar/MarginContainer/VBoxContainer/Budget/CustomProgress
 
 onready var tool_menu = $ToolMenu
+onready var tools_holder = $ToolMenu/ToolsHolder
 
 func _ready():
 	Events.connect("path_weight_updated", self, "_on_Events_path_weight_updated")
+	
+	for hazard_tool in tools_holder.get_children():
+		hazard_tool.connect("pressed", self, "_on_hazard_tool_pressed", [hazard_tool.hazard_id])
+	
+	Events.connect("enabled_hazards", self, "_on_Events_enabled_hazards")
+	if $World and $World.enabled_hazards:
+		_on_Events_enabled_hazards($World.enabled_hazards)
 
 
 func _notification(what):
@@ -48,3 +56,15 @@ func _on_GoCar_pressed():
 
 func _on_Tools_pressed():
 	print("TOOOOOLS!")
+
+
+func _on_hazard_tool_pressed(hazard_id: String):
+	var hazard_data = Hazards.get_hazard_data(hazard_id)
+	print("Hazard: ", hazard_data)
+	Events.emit_signal("hazard_tool_changed", hazard_id)
+
+
+func _on_Events_enabled_hazards(enabled_hazards):
+	print("Enabled??: ", enabled_hazards)
+	for hazard_tool in tools_holder.get_children():
+		hazard_tool.visible = hazard_tool.hazard_id in enabled_hazards

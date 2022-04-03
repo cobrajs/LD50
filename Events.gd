@@ -31,4 +31,4 @@ signal hazard_tool_changed(new_hazard)
 signal hazard_placed
 signal deactivate_tools
 
-var debug = true
+var debug = false

@@ -40,6 +40,7 @@ script = ExtResource( 2 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
+direction = Vector2( 1, 0 )
 
 [node name="Unpressed" type="NinePatchRect" parent="."]
 anchor_right = 1.0

@@ -61,7 +61,6 @@ __meta__ = {
 }
 
 [node name="World" parent="." instance=ExtResource( 3 )]
-mouse_filter = 1
 
 [node name="RightBar" type="Control" parent="."]
 anchor_left = 1.0
@@ -218,38 +217,45 @@ margin_top = -32.0
 [node name="ToolsHolder" type="HBoxContainer" parent="ToolMenu"]
 anchor_right = 1.0
 anchor_bottom = 1.0
+margin_top = -32.0
+margin_right = 320.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="PotHole" parent="ToolMenu/ToolsHolder" instance=ExtResource( 6 )]
+margin_right = 60.0
+margin_bottom = 64.0
 hazard_id = "pothole"
 texture = SubResource( 16 )
 
 [node name="Cones" parent="ToolMenu/ToolsHolder" instance=ExtResource( 6 )]
-margin_left = 36.0
-margin_right = 68.0
+margin_left = 64.0
+margin_right = 125.0
+margin_bottom = 64.0
 hazard_id = "cones"
 texture = SubResource( 17 )
 
 [node name="SpeedHump" parent="ToolMenu/ToolsHolder" instance=ExtResource( 6 )]
-margin_left = 72.0
-margin_right = 104.0
+margin_left = 129.0
+margin_right = 190.0
+margin_bottom = 64.0
 hazard_id = "speed_hump"
 texture = SubResource( 18 )
 
 [node name="StopSign" parent="ToolMenu/ToolsHolder" instance=ExtResource( 6 )]
-margin_left = 108.0
-margin_right = 140.0
+margin_left = 194.0
+margin_right = 255.0
+margin_bottom = 64.0
 hazard_id = "stop_sign"
 texture = SubResource( 19 )
 
 [node name="OneWay" parent="ToolMenu/ToolsHolder" instance=ExtResource( 6 )]
-margin_left = 144.0
-margin_right = 176.0
+margin_left = 259.0
+margin_right = 320.0
+margin_bottom = 64.0
 hazard_id = "one_way"
 texture = SubResource( 20 )
-direction = Vector2( 1, 0 )
 
 [connection signal="pressed" from="RightBar/MarginContainer/VBoxContainer/ToolButtons/Path" to="." method="_on_ToolButton_pressed"]
 [connection signal="pressed" from="RightBar/MarginContainer/VBoxContainer/ToolButtons/Tools" to="." method="_on_Tools_pressed"]

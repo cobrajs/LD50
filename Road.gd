@@ -1,11 +1,10 @@
 extends AStar_Path
-class_name Road
 
 # The basis of this code is from AndOne's YouTube video "A* Path-Finding for Grid-Based Tilemap in Godot
 # https://www.youtube.com/watch?v=dVNH6mIDksQ
 # It has been, of course, heavily modified haha
 
-onready var hazards = $Hazards
+onready var hazards: TileMap = $Hazards
 
 var car_moving = false
 var car_offset = Vector2(8, 0)
@@ -79,21 +78,20 @@ func add_hazard(hazard_id: String, direction: Vector2, cell: Vector2):
 	if cell in used_cells:
 		var weight = hazard_data["weight"] if hazard_data.has("weight") else 1.0
 
-		if hazard_id == "stop_sign":
-			astar.add_directional_weight(id(cell), id(cell + direction), 10.0)
-				
-		astar.set_point_weight_scale(id(cell), weight)
+		if hazard_data.has("directional_weight"):
+			astar.add_directional_weight(id(cell), id(cell + direction * hazard_data["directional_weight"]), weight)
+		else:
+			astar.set_point_weight_scale(id(cell), weight)
 		
-		# For one-way hazards, only connect the tiles in one direction
-		if hazard_id == "one_way":
+		## For one-way hazards, only connect the tiles in one direction
+		if hazard_id == "one_way" and false:
 			var start_cell = cell
 			var next_cell = cell + direction
 			astar.disconnect_points(id(start_cell), id(next_cell))
 			astar.connect_points(id(start_cell), id(next_cell), false)
-		
-		match direction:
-			Vector2.RIGHT:
-				pass
+
+		var tile_info = Hazards.get_tile_info(hazard_data, direction)		
+		hazards.set_cellv(cell, tile_info["tile_id"], false, false, false, tile_info["auto_tile"])
 	
 		Events.connect("update_path", self, "_on_Events_update_path")
 

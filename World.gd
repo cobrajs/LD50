@@ -6,6 +6,7 @@ export(PackedScene) var level
 onready var background = $Background
 onready var path_shower = $PathShower
 onready var animation = $AnimationPlayer
+onready var tool_preview = $ToolPreview
 
 onready var car: Sprite = $Path2D/PathFollow2D/Car
 onready var path = $Path2D
@@ -15,7 +16,7 @@ var car_moving = false
 var car_angle = 0
 
 ## Level/Algorithm parts
-var road: Road
+var road: AStar_Path
 var hazards
 var enabled_hazards: Array
 var level_instance: BaseLevel
@@ -79,6 +80,14 @@ func _gui_input(event):
 			var cell = road.world_to_map(get_global_mouse_position())
 			if current_hazard_tool != "" and cell in road.used_cells and not cell in hazards.get_used_cells():
 				road.add_hazard(current_hazard_tool, current_hazard_direction, cell)
+	
+	if event is InputEventMouseMotion and current_hazard_tool != "":
+		tool_preview.clear()
+		var cell = tool_preview.world_to_map(get_global_mouse_position())
+		if cell in road.used_cells and not cell in hazards.get_used_cells():
+			var hazard_data = Hazards.get_hazard_data(current_hazard_tool)
+			var tile_info = Hazards.get_tile_info(hazard_data, current_hazard_direction)
+			tool_preview.set_cellv(cell, tile_info["tile_id"], false, false, false, tile_info["auto_tile"])
 
 
 func _on_Events_show_path(path: PoolVector2Array):
@@ -119,6 +128,9 @@ func _on_Events_update_path(_path):
 	
 	var last_direction = null
 	var lane_offset
+	
+	if _path.size() == 0:
+		return
 	
 	## Walk through path and add points to the curve
 	for point_index in _path.size() - 1:

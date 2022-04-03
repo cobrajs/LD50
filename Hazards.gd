@@ -24,8 +24,10 @@ enum TileIds {
 const hazard_data = {
 	"pothole": {
 		"id": "pothole",
+		"tile_id": 0,
 		"cost": 10.0,
 		"weight": 5.0,
+		"directional_weight": 1,
 		"residents": -15.0,
 		"install_time": 1.0,
 		"perma": 1.0,
@@ -35,7 +37,9 @@ const hazard_data = {
 	},
 	"cones": {
 		"id": "cones",
+		"tile_id": 2,
 		"weight": 5.0,
+		"directional_weight": 1,
 		"cost": 20.0,
 		"residents": -5.0,
 		"install_time": 1.0,
@@ -44,7 +48,9 @@ const hazard_data = {
 	},
 	"one_way": {
 		"id": "one_way",
-		# No weight because this is handled differently
+		"tile_id": 3,
+		"directional_weight": -1,
+		"weight": 100.0,
 		"cost": 100.0,
 		"residents": 0.0,
 		"install_time": 7.0,
@@ -54,7 +60,9 @@ const hazard_data = {
 	},
 	"stop_sign": {
 		"id": "stop_sign",
+		"tile_id": 4,
 		"weight": 10.0,
+		"directional_weight": 1,
 		"cost": 50.0,
 		"install_time": 5.0,
 		"residents": -5.0,
@@ -64,6 +72,7 @@ const hazard_data = {
 	},
 	"speed_hump": {
 		"id": "speed_hump",
+		"tile_id": 1,
 		"weight": 5.0,
 		"cost": 80.0,
 		"install_time": 10.0,
@@ -111,4 +120,34 @@ func get_hazard_weight(hazard_id: String) -> float:
 func pothole_curve(base_point: Vector2, curve: Curve2D, travel_direction: Vector2):
 	print("Pothole look out for the pothole")
 	curve.add_point(base_point)
+
+
+func get_tile_info(hazard_data: Dictionary, direction: Vector2):
+	var auto_tile = Vector2.ZERO
+	var hazard_id = hazard_data["id"]
+	var tile_id = hazard_data["tile_id"]
 	
+	match direction:
+		Vector2.RIGHT:
+			auto_tile = Vector2(0, 0)
+		Vector2.UP:
+			auto_tile = Vector2(3, 0)
+			if hazard_id == "stop_sign":
+				tile_id += 1
+		Vector2.DOWN:
+			auto_tile = Vector2(1, 0)
+			if hazard_id == "stop_sign":
+				tile_id += 2
+		Vector2.LEFT:
+			auto_tile = Vector2(2, 0)
+			if hazard_id == "stop_sign":
+				tile_id += 3
+	
+	if hazard_id == "speed_hump" and auto_tile.x >= 2:
+		auto_tile.x -= 2
+	
+	return {
+		"tile_id": tile_id,
+		"auto_tile": auto_tile
+	}
+

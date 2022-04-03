@@ -23,17 +23,11 @@ _global_script_classes=[ {
 "class": "DirectionalWeightAStar2D",
 "language": "GDScript",
 "path": "res://DirectionalWeightAStar2D.gd"
-}, {
-"base": "AStar_Path",
-"class": "Road",
-"language": "GDScript",
-"path": "res://Road.gd"
 } ]
 _global_script_class_icons={
 "AStar_Path": "",
 "BaseLevel": "",
-"DirectionalWeightAStar2D": "",
-"Road": ""
+"DirectionalWeightAStar2D": ""
 }
 
 [application]

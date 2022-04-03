@@ -115,11 +115,16 @@ tracks/1/keys = {
 [node name="World" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
+mouse_filter = 1
 script = ExtResource( 7 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Background" type="ColorRect" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
+mouse_filter = 2
 color = Color( 0.870588, 0.933333, 0.839216, 1 )
 
 [node name="PathShower" type="TileMap" parent="."]

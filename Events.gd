@@ -1,6 +1,6 @@
 extends Node
 
-signal path_weight_updated(weight)
+signal path_cost_updated(cost)
 signal show_path(path)
 signal updated_path(path)
 
@@ -29,3 +29,6 @@ signal budget_range_updated(min_value, max_value)
 ## Signals for hazard changes
 signal hazard_tool_changed(new_hazard)
 signal hazard_placed
+signal deactivate_tools
+
+var debug = true

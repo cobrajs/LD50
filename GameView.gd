@@ -2,7 +2,7 @@ extends Control
 
 
 # Right Bar UI
-onready var path_weight_label = $RightBar/MarginContainer/VBoxContainer/PathWeight/Output
+onready var path_cost_label = $RightBar/MarginContainer/VBoxContainer/PathCost/Output
 onready var traffic_bar = $RightBar/MarginContainer/VBoxContainer/Traffic/CustomProgress
 onready var worth_it_bar = $RightBar/MarginContainer/VBoxContainer/WorhtIt/CustomProgress
 onready var residents_bar = $RightBar/MarginContainer/VBoxContainer/Residents/CustomProgress
@@ -12,10 +12,10 @@ onready var tool_menu = $ToolMenu
 onready var tools_holder = $ToolMenu/ToolsHolder
 
 func _ready():
-	Events.connect("path_weight_updated", self, "_on_Events_path_weight_updated")
+	Events.connect("path_cost_updated", self, "_on_Events_path_cost_updated")
 	
 	for hazard_tool in tools_holder.get_children():
-		hazard_tool.connect("pressed", self, "_on_hazard_tool_pressed", [hazard_tool.hazard_id])
+		hazard_tool.connect("pressed", self, "_on_hazard_tool_pressed")
 	
 	Events.connect("enabled_hazards", self, "_on_Events_enabled_hazards")
 	if $World and $World.enabled_hazards:
@@ -31,8 +31,8 @@ func _unhandled_input(event):
 		get_tree().notification(MainLoop.NOTIFICATION_WM_QUIT_REQUEST)
 
 
-func _on_Events_path_weight_updated(weight: float):
-	path_weight_label.text = str(weight)
+func _on_Events_path_cost_updated(cost: float):
+	path_cost_label.text = str(cost)
 
 
 func _process(delta):
@@ -58,13 +58,16 @@ func _on_Tools_pressed():
 	print("TOOOOOLS!")
 
 
-func _on_hazard_tool_pressed(hazard_id: String):
+func _on_hazard_tool_pressed(hazard_id: String, hazard_direction: Vector2):
 	var hazard_data = Hazards.get_hazard_data(hazard_id)
-	print("Hazard: ", hazard_data)
-	Events.emit_signal("hazard_tool_changed", hazard_id)
+	print("Hazard: ", hazard_data, ", ", hazard_direction)
+	Events.emit_signal("hazard_tool_changed", hazard_id, hazard_direction)
 
 
 func _on_Events_enabled_hazards(enabled_hazards):
-	print("Enabled??: ", enabled_hazards)
+	var visible_count = 0
 	for hazard_tool in tools_holder.get_children():
-		hazard_tool.visible = hazard_tool.hazard_id in enabled_hazards
+		var is_visible = hazard_tool.hazard_id in enabled_hazards
+		hazard_tool.visible = is_visible
+		hazard_tool.pitch_change = 1.0 + visible_count * (1.0 / 7.0)
+		visible_count += 1 if is_visible else 0

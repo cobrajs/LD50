@@ -5,7 +5,8 @@
 [node name="Level1" instance=ExtResource( 1 )]
 level_title = "Level 1"
 level_text = "Welcome!"
-enabled_hazards = "pothole,cones,speed_hump"
+enabled_hazards = "pothole,cones,speed_hump,one_way"
+resident_start_ends = PoolVector2Array( 1, 2, 10, 12 )
 
 [node name="Road" parent="." index="0"]
 tile_data = PoolIntArray( 131072, 1, 65536, 131073, 0, 0, 131074, 0, 0, 131075, 0, 0, 131076, 0, 2, 196612, 0, 1, 262148, 0, 1, 327684, 0, 65536, 327685, 0, 0, 327686, 0, 0, 327687, 0, 2, 393223, 0, 1, 458759, 0, 1, 524295, 0, 1, 589831, 0, 1, 655365, 0, 65537, 655366, 0, 0, 655367, 0, 3, 720901, 0, 1, 786437, 0, 65536, 786438, 0, 0, 786439, 0, 0, 786440, 0, 0, 786441, 0, 0, 786442, 0, 0, 786443, 2, 65536 )

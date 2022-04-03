@@ -14,17 +14,29 @@ onready var path_follow = $Path2D/PathFollow2D
 var car_moving = false
 var car_angle = 0
 
-var road
+## Level/Algorithm parts
+var road: Road
 var hazards
 var enabled_hazards: Array
+var level_instance: BaseLevel
+
+var current_path_cost = 0
+
+var resident_base_cost = 0
+var resident_current_cost = 0
+
+var current_hazard_tool = ""
+var current_hazard_direction = Vector2.ZERO
 
 
 func _ready():
 	Events.connect("show_path", self, "_on_Events_show_path")
 	Events.connect("updated_path", self, "_on_Events_update_path")
+	Events.connect("path_cost_updated", self, "_on_Events_path_cost_updated")
 	Events.connect("send_car", self, "_on_Events_send_car")
 	Events.connect("load_level", self, "_on_Events_load_level")
-	Events.connect("hazard_tool_changed", self, "_on_Events_tool_changed")
+	Events.connect("hazard_tool_changed", self, "_on_Events_hazard_tool_changed")
+	Events.connect("deactivate_tools", self, "_on_Events_deactivate_tools")
 	
 	if level == null:
 		level = load("res://levels/Level1.tscn")
@@ -61,6 +73,14 @@ func _physics_process(delta):
 		car.rotation = deg2rad(car_angle)
 
 
+func _gui_input(event):
+	if event is InputEventMouseButton:
+		if event.pressed and event.button_index == BUTTON_LEFT:
+			var cell = road.world_to_map(get_global_mouse_position())
+			if current_hazard_tool != "" and cell in road.used_cells and not cell in hazards.get_used_cells():
+				road.add_hazard(current_hazard_tool, current_hazard_direction, cell)
+
+
 func _on_Events_show_path(path: PoolVector2Array):
 	path_shower.clear()
 	if path != null:
@@ -78,11 +98,11 @@ func _on_Events_send_car():
 func get_lane_offset(direction):
 	match direction:
 		Vector2.LEFT:
-			return Vector2(0, -10)
+			return Vector2(0, -18)
 		Vector2.UP:
 			return Vector2(8, 0)
 		Vector2.RIGHT:
-			return Vector2(0, 8)
+			return Vector2(0, 2)
 		Vector2.DOWN:
 			return Vector2(-8, 0)
 	return Vector2.ZERO
@@ -137,10 +157,35 @@ func _on_Events_update_path(_path):
 
 
 func _on_Events_load_level(level):
-	var level_instance = level.instance()
+	level_instance = level.instance()
 	background.get_parent().add_child_below_node(background, level_instance)
 	road = level_instance.get_node("Road")
 	hazards = road.get_node("Hazards")
 	
 	enabled_hazards = level_instance.get_enabled_hazards()
 	Events.emit_signal("enabled_hazards", enabled_hazards)
+	
+	resident_base_cost = get_resident_cost()
+	
+
+func get_resident_cost():
+	var resident_paths = level_instance.get_resident_paths()
+	var resident_cost = 0
+	for resident_path in resident_paths:
+		resident_cost += road.get_path_cost(resident_path["start"], resident_path["end"])
+	
+	return resident_cost
+
+
+func _on_Events_path_cost_updated(path_cost):
+	resident_current_cost = get_resident_cost()
+	current_path_cost = path_cost
+
+
+func _on_Events_hazard_tool_changed(new_hazard_tool, new_hazard_direction):
+	current_hazard_tool = new_hazard_tool
+	current_hazard_direction = new_hazard_direction
+
+
+func _on_Events_deactivate_tools():
+	current_hazard_tool = ""

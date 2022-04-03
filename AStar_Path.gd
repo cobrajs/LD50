@@ -33,6 +33,10 @@ func _get_path(start, end):
 	path = astar.get_point_path(id(start), id(end))
 
 
+func get_path_cost(start: Vector2, end: Vector2) -> float:
+	return astar.get_path_cost(id(start), id(end))
+
+
 # Cantor pairing function
 func id(point : Vector2):
 	var a = point.x

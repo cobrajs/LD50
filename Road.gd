@@ -1,4 +1,5 @@
 extends AStar_Path
+class_name Road
 
 # The basis of this code is from AndOne's YouTube video "A* Path-Finding for Grid-Based Tilemap in Godot
 # https://www.youtube.com/watch?v=dVNH6mIDksQ
@@ -65,21 +66,40 @@ func _ready():
 
 func _get_path(from, to):
 	._get_path(from, to)
-	Events.emit_signal("path_weight_updated", get_path_weight(from, to))
+	Events.emit_signal("path_cost_updated", get_path_cost(from, to))
 	Events.emit_signal("updated_path", path)
 
 
-func get_path_weight(from, to):
+func get_path_cost(from, to):
 	return astar.get_path_cost(id(from), id(to))
 
 
-func _input(event):
-	if (event is InputEventMouseButton and event.is_pressed() and event.button_index == BUTTON_LEFT) and not car_moving:
-		var mouse_position = world_to_map(get_global_mouse_position())
-		print("MOUSE! ", mouse_position)
+func add_hazard(hazard_id: String, direction: Vector2, cell: Vector2):
+	var hazard_data = Hazards.get_hazard_data(hazard_id)
+	if cell in used_cells:
+		var weight = hazard_data["weight"] if hazard_data.has("weight") else 1.0
+
+		if hazard_id == "stop_sign":
+			astar.add_directional_weight(id(cell), id(cell + direction), 10.0)
+				
+		astar.set_point_weight_scale(id(cell), weight)
+		
+		# For one-way hazards, only connect the tiles in one direction
+		if hazard_id == "one_way":
+			var start_cell = cell
+			var next_cell = cell + direction
+			astar.disconnect_points(id(start_cell), id(next_cell))
+			astar.connect_points(id(start_cell), id(next_cell), false)
+		
+		match direction:
+			Vector2.RIGHT:
+				pass
 	
+		Events.connect("update_path", self, "_on_Events_update_path")
+
 
 func _on_Events_update_path():
 	if road_start and road_end:
 		_get_path(road_start, road_end)
-		Events.emit_signal("show_path", path)
+		if Events.debug:
+			Events.emit_signal("show_path", path)

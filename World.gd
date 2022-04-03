@@ -3,6 +3,7 @@ extends Control
 # Game elements
 onready var path_shower = $PathShower
 onready var road = $Level1/Road
+onready var hazards = $Level1/Road/Hazards
 
 onready var car: Sprite = $Path2D/PathFollow2D/Car
 onready var path = $Path2D
@@ -82,23 +83,37 @@ func _on_Events_update_path(_path):
 	
 	var last_direction = null
 	var lane_offset
+	
+	## Walk through path and add points to the curve
 	for point_index in _path.size() - 1:
 		var cell = _path[point_index]
 		var next_cell = _path[point_index + 1]
 		var direction = next_cell - cell
 		lane_offset = get_lane_offset(direction)
-		if last_direction != null and last_direction != direction:
-			var last_lane_offset = get_lane_offset(last_direction)
-			var center = road.map_to_world(cell) + Vector2(16, 16) + last_lane_offset + lane_offset
-			var offset : Vector2 = last_direction - direction
-			path.curve.add_point(center - offset * 2, \
-				Vector2(offset.x, 0) * 4, \
-				Vector2(0, offset.y) * 4)
-		else:
-			var offscreen_offset = Vector2.ZERO
-			if point_index == 0:
-				offscreen_offset = -direction * 32
-			path.curve.add_point(road.map_to_world(cell) + Vector2(16, 16) + lane_offset * rand_range(0.8, 1.2) + offscreen_offset)
+		var cell_center = road.map_to_world(cell) + road.cell_size / 2
+		var standard_offset = cell_center + lane_offset * rand_range(0.8, 1.2)
+		var skip_add_point = false
+		
+		var hazard_cell = hazards.get_cellv(cell)
+		if hazard_cell != -1:
+			var hazard_data = Hazards.get_hazard_by_tile_id(hazard_cell)
+			if hazard_data.has("curve_func"):
+				hazard_data["curve_func"].call_func(standard_offset, path.curve, direction)
+				skip_add_point = true
+		
+		if not skip_add_point:
+			if last_direction != null and last_direction != direction:
+				var last_lane_offset = get_lane_offset(last_direction)
+				var center = cell_center + last_lane_offset + lane_offset
+				var offset : Vector2 = last_direction - direction
+				path.curve.add_point(center - offset * 2, \
+					Vector2(offset.x, 0) * 4, \
+					Vector2(0, offset.y) * 4)
+			else:
+				var offscreen_offset = Vector2.ZERO
+				if point_index == 0:
+					offscreen_offset = -direction * 32
+				path.curve.add_point(standard_offset + offscreen_offset)
 			
 		last_direction = direction
 		

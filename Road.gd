@@ -26,8 +26,6 @@ func _ready():
 		var hazard_type = hazards.get_cellv(hazard)
 		var hazard_data = Hazards.get_hazard_by_tile_id(hazard_type)
 		var weight = hazard_data["weight"] if hazard_data.has("weight") else 1.0
-		if hazard_data.has("curve_func"):
-			hazard_data["curve_func"].call_func()
 
 		match hazard_type:
 			Hazards.TileIds.STOP_SIGN_RIGHT:

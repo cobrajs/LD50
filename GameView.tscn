@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=2]
+[gd_scene load_steps=20 format=2]
 
 [ext_resource path="res://ui_theme.tres" type="Theme" id=1]
 [ext_resource path="res://GameView.gd" type="Script" id=2]
@@ -7,6 +7,11 @@
 [ext_resource path="res://ui/LabeledBar.tscn" type="PackedScene" id=5]
 [ext_resource path="res://ui/HazardButtonBase.tscn" type="PackedScene" id=6]
 [ext_resource path="res://assets/hazard_buttons.png" type="Texture" id=7]
+[ext_resource path="res://assets/cars/car.png" type="Texture" id=8]
+
+[sub_resource type="AtlasTexture" id=11]
+atlas = ExtResource( 8 )
+region = Rect2( 32, 0, 16, 16 )
 
 [sub_resource type="AtlasTexture" id=1]
 resource_local_to_scene = true
@@ -180,29 +185,42 @@ min_value = -50.0
 max_value = 50.0
 value = 0.0
 
-[node name="HBoxContainer" type="HBoxContainer" parent="RightBar/MarginContainer/VBoxContainer"]
+[node name="ToolButtons" type="GridContainer" parent="RightBar/MarginContainer/VBoxContainer"]
 margin_top = 336.0
 margin_right = 190.0
 margin_bottom = 470.0
 size_flags_vertical = 3
+columns = 2
 
-[node name="ToolButton" type="ToolButton" parent="RightBar/MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="Path" type="ToolButton" parent="RightBar/MarginContainer/VBoxContainer/ToolButtons"]
 margin_right = 93.0
-margin_bottom = 134.0
+margin_bottom = 36.0
 size_flags_horizontal = 3
 text = "Path"
 
-[node name="ToolButton2" type="ToolButton" parent="RightBar/MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="Tools" type="ToolButton" parent="RightBar/MarginContainer/VBoxContainer/ToolButtons"]
 margin_left = 97.0
 margin_right = 190.0
-margin_bottom = 134.0
+margin_bottom = 36.0
 size_flags_horizontal = 3
 text = "Tools"
+
+[node name="GoCar" type="ToolButton" parent="RightBar/MarginContainer/VBoxContainer/ToolButtons"]
+margin_top = 40.0
+margin_right = 93.0
+margin_bottom = 76.0
+size_flags_horizontal = 3
+text = "Car"
+icon = SubResource( 11 )
+expand_icon = true
 
 [node name="ToolMenu" type="Control" parent="."]
 anchor_top = 1.0
 anchor_bottom = 1.0
 margin_top = -32.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="GridContainer" type="HBoxContainer" parent="ToolMenu"]
 anchor_right = 1.0
@@ -236,8 +254,9 @@ margin_right = 176.0
 texture_normal = SubResource( 7 )
 texture_pressed = SubResource( 8 )
 
-[connection signal="pressed" from="RightBar/MarginContainer/VBoxContainer/HBoxContainer/ToolButton" to="." method="_on_ToolButton_pressed"]
-[connection signal="pressed" from="RightBar/MarginContainer/VBoxContainer/HBoxContainer/ToolButton2" to="." method="_on_ToolButton_pressed"]
+[connection signal="pressed" from="RightBar/MarginContainer/VBoxContainer/ToolButtons/Path" to="." method="_on_ToolButton_pressed"]
+[connection signal="pressed" from="RightBar/MarginContainer/VBoxContainer/ToolButtons/Tools" to="." method="_on_Tools_pressed"]
+[connection signal="pressed" from="RightBar/MarginContainer/VBoxContainer/ToolButtons/GoCar" to="." method="_on_GoCar_pressed"]
 
 [editable path="RightBar/MarginContainer/VBoxContainer/PathWeight"]
 [editable path="RightBar/MarginContainer/VBoxContainer/Traffic"]

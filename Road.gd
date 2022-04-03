@@ -71,6 +71,7 @@ func _ready():
 func _get_path(from, to):
 	._get_path(from, to)
 	Events.emit_signal("path_weight_updated", get_path_weight(from, to))
+	Events.emit_signal("updated_path", path)
 
 
 func get_path_weight(from, to):
@@ -79,26 +80,9 @@ func get_path_weight(from, to):
 
 func _input(event):
 	if (event is InputEventMouseButton and event.is_pressed() and event.button_index == BUTTON_LEFT) and not car_moving:
-		print(event, get_viewport().get_mouse_position(), get_global_mouse_position(), world_to_map(get_global_mouse_position()))
 		var mouse_position = world_to_map(get_global_mouse_position())
-		if used_cells.has(mouse_position):
-			var car_position = world_to_map(car.global_position)
-			_get_path(car_position, mouse_position)
-			car_moving = true
-			Events.emit_signal("show_path", null)
-			move()
+		print("MOUSE! ", mouse_position)
 	
-	if event is InputEventMouseButton and event.is_pressed() and event.button_index == BUTTON_RIGHT:
-		var mouse_position = world_to_map(get_global_mouse_position())
-		var hazard = hazards.get_cellv(mouse_position)
-		if hazard > -1:
-			print("Hazard here! ", hazard, mouse_position, "  ", hazards.get_cell_autotile_coord(mouse_position.x, mouse_position.y))
-		
-		if used_cells.has(mouse_position):
-			var car_position = world_to_map(car.global_position)
-			_get_path(car_position, mouse_position)
-			Events.emit_signal("show_path", path)
-
 
 func move():
 	for point in path:

@@ -5,6 +5,8 @@ extends Control
 onready var path_weight_label = $RightBar/MarginContainer/VBoxContainer/PathWeight/Output
 onready var traffic_bar = $RightBar/MarginContainer/VBoxContainer/Traffic/ProgressBar
 
+onready var tool_menu = $ToolMenu
+
 func _ready():
 	Events.connect("path_weight_updated", self, "_on_Events_path_weight_updated")
 	
@@ -33,3 +35,11 @@ func _process(delta):
 
 func _on_ToolButton_pressed():
 	Events.emit_signal("update_path")
+
+
+func _on_GoCar_pressed():
+	Events.emit_signal("send_car")
+
+
+func _on_Tools_pressed():
+	print("TOOOOOLS!")

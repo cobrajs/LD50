@@ -23,11 +23,17 @@ _global_script_classes=[ {
 "class": "DirectionalWeightAStar2D",
 "language": "GDScript",
 "path": "res://DirectionalWeightAStar2D.gd"
+}, {
+"base": "TileMap",
+"class": "Road",
+"language": "GDScript",
+"path": "res://Road.gd"
 } ]
 _global_script_class_icons={
 "AStar_Path": "",
 "BaseLevel": "",
-"DirectionalWeightAStar2D": ""
+"DirectionalWeightAStar2D": "",
+"Road": ""
 }
 
 [application]
@@ -39,8 +45,9 @@ config/icon="res://icon.png"
 
 [autoload]
 
-Events="*res://Events.gd"
 Hazards="*res://Hazards.gd"
+Events="*res://Events.gd"
+Simulation="*res://Simulation.gd"
 
 [display]
 

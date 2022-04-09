@@ -1,8 +1,8 @@
 extends Node
 
-signal path_cost_updated(cost)
 signal show_path(path)
 signal updated_path(path)
+signal updated_path_cost(cost)
 
 signal update_path
 
@@ -27,7 +27,7 @@ signal budget_updated(budget_value)
 signal budget_range_updated(min_value, max_value)
 
 ## Signals for hazard changes
-signal hazard_tool_changed(new_hazard)
+signal hazard_tool_changed(new_tool, new_tool_direction)
 signal hazard_placed
 signal deactivate_tools
 

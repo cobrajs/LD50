@@ -1,5 +1,9 @@
 extends Node
 
+var current_tool: String
+var current_tool_direction: int
+var enabled_hazards
+
 enum TileIds {
 	POTHOLE = 0,
 	SPEED_HUMP = 1,
@@ -9,6 +13,11 @@ enum TileIds {
 	STOP_SIGN_DOWN = 5,
 	STOP_SIGN_LEFT = 6,
 	STOP_SIGN_UP = 7,
+}
+
+enum Lane {
+	LEFT,
+	RIGHT
 }
 
 ##
@@ -117,32 +126,70 @@ func get_hazard_weight(hazard_id: String) -> float:
 
 
 
-func pothole_curve(base_point: Vector2, curve: Curve2D, travel_direction: Vector2):
-	print("Pothole look out for the pothole")
+func pothole_curve(base_point: Vector2, curve: Curve2D, _travel_direction: Vector2, _lane: int):
+	var offset = Vector2(0, -10)
+	## Turn off the offset if the pothole isn't in our lane
+	if (_lane == Lane.LEFT and (_travel_direction.x == 1 or _travel_direction.y == 1)) or \
+		(_lane == Lane.RIGHT and (_travel_direction.x == -1 or _travel_direction.y == -1)):
+		offset = Vector2.ZERO
+
+	if _travel_direction.y != 0:
+		offset = offset.rotated(PI / 2)
+	
+	print("Adding offset! ", offset)
+	
+	curve.add_point(base_point + offset)
+
+
+func speed_hump_curve(base_point: Vector2, curve: Curve2D, _travel_direction: Vector2, _lane: int):
 	curve.add_point(base_point)
 
 
-func get_tile_info(hazard_data: Dictionary, direction: Vector2):
+func cones_curve(base_point: Vector2, curve: Curve2D, travel_direction: Vector2, _lane: int):
+	curve.add_point(base_point)
+
+
+func get_direction(direction_lane: int, tile_orientation: int):
+	match tile_orientation:
+		Road.HORIZONTAL:
+			match direction_lane:
+				Hazards.Lane.LEFT:
+					return Vector2(-1, 0)
+				Hazards.Lane.RIGHT:
+					return Vector2(1, 0)
+		Road.VERTICAL:
+			match direction_lane:
+				Hazards.Lane.LEFT:
+					return Vector2(0, -1)
+				Hazards.Lane.RIGHT:
+					return Vector2(0, 1)
+	return Vector2(1, 0)
+
+
+func get_tile_info(hazard_data: Dictionary, direction: int, tile_orientation: int):
 	var auto_tile = Vector2.ZERO
 	var hazard_id = hazard_data["id"]
 	var tile_id = hazard_data["tile_id"]
+	var is_stop_sign = hazard_id == "stop_sign"
 	
-	match direction:
-		Vector2.RIGHT:
-			auto_tile = Vector2(0, 0)
-		Vector2.UP:
-			auto_tile = Vector2(3, 0)
-			if hazard_id == "stop_sign":
-				tile_id += 1
-		Vector2.DOWN:
-			auto_tile = Vector2(1, 0)
-			if hazard_id == "stop_sign":
-				tile_id += 2
-		Vector2.LEFT:
-			auto_tile = Vector2(2, 0)
-			if hazard_id == "stop_sign":
-				tile_id += 3
-	
+	match tile_orientation:
+		Road.HORIZONTAL:
+			if direction == Hazards.Lane.RIGHT:
+				auto_tile = Vector2(0, 0)
+			else:
+				auto_tile = Vector2(2, 0)
+				if is_stop_sign:
+					tile_id += 2
+		Road.VERTICAL:
+			if direction == Hazards.Lane.RIGHT:
+				auto_tile = Vector2(1, 0)
+				if is_stop_sign:
+					tile_id += 1
+			else:
+				auto_tile = Vector2(3, 0)
+				if is_stop_sign:
+					tile_id += 3
+
 	if hazard_id == "speed_hump" and auto_tile.x >= 2:
 		auto_tile.x -= 2
 	
@@ -150,4 +197,16 @@ func get_tile_info(hazard_data: Dictionary, direction: Vector2):
 		"tile_id": tile_id,
 		"auto_tile": auto_tile
 	}
+
+
+## Setting current tool
+func set_current_tool(new_tool: String, new_tool_direction: int):
+	current_tool = new_tool
+	current_tool_direction = new_tool_direction
+	Events.emit_signal("hazard_tool_changed", new_tool, new_tool_direction)
+
+
+func set_enabled_hazards(new_enabled_hazards):
+	enabled_hazards = new_enabled_hazards
+	Events.emit_signal("enabled_hazards", enabled_hazards)
 

@@ -12,14 +12,21 @@ onready var tool_menu = $ToolMenu
 onready var tools_holder = $ToolMenu/ToolsHolder
 
 func _ready():
-	Events.connect("path_cost_updated", self, "_on_Events_path_cost_updated")
+	Events.connect("updated_path_cost", self, "_on_Events_updated_path_cost")
 	
 	for hazard_tool in tools_holder.get_children():
 		hazard_tool.connect("pressed", self, "_on_hazard_tool_pressed")
 	
 	Events.connect("enabled_hazards", self, "_on_Events_enabled_hazards")
-	if $World and $World.enabled_hazards:
-		_on_Events_enabled_hazards($World.enabled_hazards)
+	if Hazards.enabled_hazards:
+		_on_Events_enabled_hazards(Hazards.enabled_hazards)
+	
+	Events.connect("budget_updated", self, "_on_Events_budget_updated")
+	Events.connect("budget_updated", self, "_on_Events_budget_updated")
+	Events.connect("budget_updated", self, "_on_Events_budget_updated")
+
+	Events.connect("deactivate_tools", self, "_on_Events_deactivate_tools")
+
 
 
 func _notification(what):
@@ -31,7 +38,7 @@ func _unhandled_input(event):
 		get_tree().notification(MainLoop.NOTIFICATION_WM_QUIT_REQUEST)
 
 
-func _on_Events_path_cost_updated(cost: float):
+func _on_Events_updated_path_cost(cost: float):
 	path_cost_label.text = str(cost)
 
 
@@ -58,11 +65,14 @@ func _on_Tools_pressed():
 	print("TOOOOOLS!")
 
 
-func _on_hazard_tool_pressed(hazard_id: String, hazard_direction: Vector2):
-	var hazard_data = Hazards.get_hazard_data(hazard_id)
-	print("Hazard: ", hazard_data, ", ", hazard_direction)
-	Events.emit_signal("hazard_tool_changed", hazard_id, hazard_direction)
+func _on_hazard_tool_pressed(hazard_id: String, hazard_lane: int):
+	print("Pressed: ", hazard_id)
+	Hazards.set_current_tool(hazard_id, hazard_lane)
 
+
+func _on_Events_deactivate_tools():
+	Hazards.set_current_tool("", 0)
+	
 
 func _on_Events_enabled_hazards(enabled_hazards):
 	var visible_count = 0
@@ -71,3 +81,7 @@ func _on_Events_enabled_hazards(enabled_hazards):
 		hazard_tool.visible = is_visible
 		hazard_tool.pitch_change = 1.0 + visible_count * (1.0 / 7.0)
 		visible_count += 1 if is_visible else 0
+
+
+func _on_Play_pressed():
+	Simulation.start()

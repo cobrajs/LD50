@@ -5,7 +5,7 @@ export(String) var hazard_id
 export(AtlasTexture) var texture
 export(float) var pitch_change = 1.0 setget update_pitch_change
 export(bool) var active_tool = false
-export(Vector2) var direction = Vector2.ZERO
+export(int) var direction = Hazards.Lane.RIGHT
 
 var mouse_pressed = false
 var mouse_over = false
@@ -39,6 +39,7 @@ func _ready():
 func _gui_input(event):
 	if event is InputEventMouseButton:
 		if mouse_pressed and event.pressed == false:
+			print("Direction: ", direction)
 			emit_signal("pressed", hazard_id, direction)
 			_unpress()
 		if event.pressed and event.button_index == BUTTON_LEFT:
@@ -51,10 +52,19 @@ func _press():
 	use_unpressed_rect.visible = false
 	$ClickDown.play()
 	
-	if active_tool and direction != Vector2.ZERO:
-		direction = direction.rotated(PI / 2).round()
-		texture_rect.rect_pivot_offset = texture_rect.rect_size / 2
-		texture_rect.rect_rotation = rad2deg(direction.angle())
+	if active_tool:
+		if direction == Hazards.Lane.RIGHT:
+			direction = Hazards.Lane.LEFT
+			if hazard_id == "one_way":
+				texture_rect.flip_v = true
+			else:
+				texture_rect.flip_h = true
+		else:
+			direction = Hazards.Lane.RIGHT
+			if hazard_id == "one_way":
+				texture_rect.flip_v = false
+			else:
+				texture_rect.flip_h = false
 
 
 func _unpress():
@@ -90,7 +100,8 @@ func update_pitch_change(new_pitch_change):
 	$ClickUp.pitch_scale = new_pitch_change
 
 
-func _on_Events_hazard_tool_changed(new_hazard_id, new_hazard_direction):
+func _on_Events_hazard_tool_changed(new_hazard_id, _new_hazard_direction):
+	print("Changing that tool! ", new_hazard_id)
 	if new_hazard_id == hazard_id:
 		if not active_tool:
 			set_active()

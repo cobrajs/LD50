@@ -1,9 +1,13 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://levels/hazards_tileset.tres" type="TileSet" id=1]
-[ext_resource path="res://assets/cars/car.png" type="Texture" id=2]
 [ext_resource path="res://assets/tiles/arrows.png" type="Texture" id=5]
 [ext_resource path="res://World.gd" type="Script" id=7]
+
+[sub_resource type="Curve2D" id=2]
+_data = {
+"points": PoolVector2Array(  )
+}
 
 [sub_resource type="TileSet" id=1]
 0/name = "arrows"
@@ -30,94 +34,14 @@
 0/shapes = [  ]
 0/z_index = 0
 
-[sub_resource type="Animation" id=2]
-resource_name = "HideCar"
-length = 0.2
-tracks/0/type = "value"
-tracks/0/path = NodePath("Path2D/PathFollow2D/Car:visible")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0.2 ),
-"transitions": PoolRealArray( 1 ),
-"update": 1,
-"values": [ false ]
-}
-tracks/1/type = "value"
-tracks/1/path = NodePath("Path2D/PathFollow2D/Car:modulate")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/keys = {
-"times": PoolRealArray( 0, 0.2 ),
-"transitions": PoolRealArray( 0.659754, 1 ),
-"update": 0,
-"values": [ Color( 1, 1, 1, 1 ), Color( 1, 1, 1, 0 ) ]
-}
-
-[sub_resource type="Animation" id=3]
-length = 0.001
-tracks/0/type = "value"
-tracks/0/path = NodePath("Path2D/PathFollow2D/Car:visible")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
-"update": 0,
-"values": [ false ]
-}
-tracks/1/type = "value"
-tracks/1/path = NodePath("Path2D/PathFollow2D/Car:modulate")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
-"update": 0,
-"values": [ Color( 1, 1, 1, 1 ) ]
-}
-
-[sub_resource type="Animation" id=4]
-resource_name = "ShowCar"
-length = 0.3
-tracks/0/type = "value"
-tracks/0/path = NodePath("Path2D/PathFollow2D/Car:visible")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
-"update": 1,
-"values": [ true ]
-}
-tracks/1/type = "value"
-tracks/1/path = NodePath("Path2D/PathFollow2D/Car:modulate")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/keys = {
-"times": PoolRealArray( 0, 0.3 ),
-"transitions": PoolRealArray( 1.7411, 1 ),
-"update": 0,
-"values": [ Color( 1, 1, 1, 0 ), Color( 1, 1, 1, 1 ) ]
-}
-
 [node name="World" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 1
 script = ExtResource( 7 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Background" type="ColorRect" parent="."]
 anchor_right = 1.0
@@ -125,34 +49,19 @@ anchor_bottom = 1.0
 mouse_filter = 2
 color = Color( 0.870588, 0.933333, 0.839216, 1 )
 
+[node name="Hazards" type="TileMap" parent="."]
+tile_set = ExtResource( 1 )
+cell_size = Vector2( 32, 32 )
+format = 1
+
+[node name="SimulationPath" type="Path2D" parent="."]
+curve = SubResource( 2 )
+
 [node name="PathShower" type="TileMap" parent="."]
 tile_set = SubResource( 1 )
 cell_size = Vector2( 32, 32 )
 cell_custom_transform = Transform2D( 32, 0, 0, 32, 0, 0 )
 format = 1
-
-[node name="Path2D" type="Path2D" parent="."]
-position = Vector2( -2, 2 )
-curve = null
-
-[node name="PathFollow2D" type="PathFollow2D" parent="Path2D"]
-position = Vector2( 12, 85 )
-rotation = 0.0314864
-rotate = false
-loop = false
-
-[node name="Car" type="Sprite" parent="Path2D/PathFollow2D"]
-visible = false
-scale = Vector2( 1.5, 1.5 )
-texture = ExtResource( 2 )
-hframes = 4
-vframes = 4
-frame = 1
-
-[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-anims/HideCar = SubResource( 2 )
-anims/RESET = SubResource( 3 )
-anims/ShowCar = SubResource( 4 )
 
 [node name="ToolPreview" type="TileMap" parent="."]
 modulate = Color( 1, 1, 1, 0.635294 )
@@ -160,3 +69,5 @@ tile_set = ExtResource( 1 )
 cell_size = Vector2( 32, 32 )
 cell_custom_transform = Transform2D( 32, 0, 0, 32, 0, 0 )
 format = 1
+
+[connection signal="mouse_exited" from="." to="." method="_on_World_mouse_exited"]

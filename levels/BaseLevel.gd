@@ -11,11 +11,11 @@ export(String, MULTILINE) var enabled_hazards = "potholes,cones,speed_hump"
 export(PoolVector2Array) var resident_start_ends
 
 
-func get_enabled_hazards():
+func get_enabled_hazards() -> Array:
 	return enabled_hazards.split(",")
 
 
-func get_resident_paths():
+func get_resident_paths() -> Array:
 	var paths = []
 	
 	if resident_start_ends and resident_start_ends.size() > 1:
@@ -26,3 +26,15 @@ func get_resident_paths():
 			})
 	
 	return paths
+
+
+func get_budget() -> int:
+	return level_start_budget
+
+
+func get_level_info() -> Dictionary:
+	return {
+		"title": level_title,
+		"number": level_number,
+		"description": level_text
+	}

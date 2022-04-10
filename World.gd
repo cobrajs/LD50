@@ -5,11 +5,10 @@ export(PackedScene) var level
 # Game elements
 onready var background = $Background
 onready var path_shower = $PathShower
-onready var animation = $AnimationPlayer
 onready var tool_preview = $ToolPreview
 
 onready var path = $SimulationPath
-onready var hazards: TileMap = $Hazards
+onready var hazards: TileMap
 
 ## Level/Algorithm parts
 var level_instance: BaseLevel
@@ -21,7 +20,6 @@ func _ready():
 	Events.connect("hazard_tool_changed", self, "_on_Events_hazard_tool_changed")
 	
 	Simulation.path = path
-	Simulation.hazards_display = hazards
 		
 	if level == null:
 		level = load("res://levels/Level1.tscn")
@@ -37,6 +35,7 @@ func _gui_input(event):
 				if tile_orientation != Road.OTHER:
 					Simulation.add_hazard(Hazards.current_tool, Hazards.current_tool_direction, cell, tile_orientation)
 					Events.emit_signal("deactivate_tools")
+					tool_preview.clear()
 		
 	if event is InputEventMouseMotion and Hazards.current_tool != "":
 		tool_preview.clear()
@@ -63,9 +62,14 @@ func _on_Events_show_path(path_to_show: PoolVector2Array):
 
 func _on_Events_load_level(level_to_load):
 	level_instance = level_to_load.instance()
-	hazards.get_parent().add_child_below_node(hazards, level_instance)
+	background.get_parent().add_child_below_node(background, level_instance)
+	hazards = level_instance.get_node("Hazards")
+	Simulation.hazards_display = hazards
 	Simulation.load_road(level_instance.get_node("Road"))
 	Simulation.load_resident_paths(level_instance.get_resident_paths())
+	Simulation.budget_max = level_instance.get_budget()
+	
+	Events.emit_signal("disable_tools")
 
 	Hazards.set_enabled_hazards(level_instance.get_enabled_hazards())
 	

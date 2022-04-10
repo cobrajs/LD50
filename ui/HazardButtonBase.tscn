@@ -1,9 +1,26 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://assets/hazard_buttons.png" type="Texture" id=1]
 [ext_resource path="res://ui/HazardButtonBase.gd" type="Script" id=2]
 [ext_resource path="res://assets/sounds/click_up.wav" type="AudioStream" id=3]
 [ext_resource path="res://assets/sounds/click_down.wav" type="AudioStream" id=4]
+
+[sub_resource type="Shader" id=6]
+code = "shader_type canvas_item;
+
+uniform int disabled = 0;
+
+void fragment() {
+	COLOR = texture(TEXTURE, UV);
+
+	float pixel_on = float(int(UV.x / TEXTURE_PIXEL_SIZE.x) % 2 + int(UV.y / TEXTURE_PIXEL_SIZE.y) % 2);
+
+	COLOR.rgb = mix(COLOR.rgb, vec3(0, 0, 0), (abs(pixel_on - 1f) * float(disabled)) / 2f);
+}"
+
+[sub_resource type="ShaderMaterial" id=7]
+shader = SubResource( 6 )
+shader_param/disabled = 0
 
 [sub_resource type="AtlasTexture" id=1]
 resource_local_to_scene = true
@@ -31,6 +48,7 @@ atlas = ExtResource( 1 )
 region = Rect2( 0, 32, 32, 32 )
 
 [node name="HazardButton" type="Control"]
+material = SubResource( 7 )
 margin_right = 32.0
 margin_bottom = 32.0
 rect_min_size = Vector2( 32, 32 )
@@ -42,6 +60,7 @@ __meta__ = {
 }
 
 [node name="Unpressed" type="NinePatchRect" parent="."]
+use_parent_material = true
 anchor_right = 1.0
 anchor_bottom = 1.0
 texture = SubResource( 1 )
@@ -55,6 +74,7 @@ __meta__ = {
 
 [node name="UnpressedActive" type="NinePatchRect" parent="."]
 visible = false
+use_parent_material = true
 anchor_right = 1.0
 anchor_bottom = 1.0
 texture = SubResource( 4 )
@@ -68,6 +88,7 @@ __meta__ = {
 
 [node name="Pressed" type="NinePatchRect" parent="."]
 visible = false
+use_parent_material = true
 anchor_right = 1.0
 anchor_bottom = 1.0
 texture = SubResource( 2 )
@@ -78,6 +99,7 @@ patch_margin_bottom = 4
 
 [node name="PressedActive" type="NinePatchRect" parent="."]
 visible = false
+use_parent_material = true
 anchor_right = 1.0
 anchor_bottom = 1.0
 texture = SubResource( 5 )
@@ -87,6 +109,7 @@ patch_margin_right = 4
 patch_margin_bottom = 4
 
 [node name="TextureRect" type="TextureRect" parent="."]
+use_parent_material = true
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -102,4 +125,7 @@ texture = SubResource( 3 )
 stream = ExtResource( 3 )
 
 [node name="ClickDown" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 4 )
+
+[node name="ErrorSound" type="AudioStreamPlayer" parent="."]
 stream = ExtResource( 4 )

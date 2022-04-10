@@ -30,5 +30,7 @@ signal budget_range_updated(min_value, max_value)
 signal hazard_tool_changed(new_tool, new_tool_direction)
 signal hazard_placed
 signal deactivate_tools
+signal enable_tools
+signal disable_tools
 
 var debug = false

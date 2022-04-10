@@ -6,6 +6,7 @@ export(AtlasTexture) var texture
 export(float) var pitch_change = 1.0 setget update_pitch_change
 export(bool) var active_tool = false
 export(int) var direction = Hazards.Lane.RIGHT
+export(bool) var disabled = false
 
 var mouse_pressed = false
 var mouse_over = false
@@ -27,6 +28,8 @@ func _ready():
 	update_pitch_change(pitch_change)
 	Events.connect("hazard_tool_changed", self, "_on_Events_hazard_tool_changed")
 	Events.connect("deactivate_tools", self, "_on_Events_deactivate_tools")
+	Events.connect("disable_tools", self, "_on_Events_disable_tools")
+	Events.connect("enable_tools", self, "_on_Events_enable_tools")
 	
 	if active_tool:
 		use_pressed_rect = pressed_active_rect
@@ -39,7 +42,6 @@ func _ready():
 func _gui_input(event):
 	if event is InputEventMouseButton:
 		if mouse_pressed and event.pressed == false:
-			print("Direction: ", direction)
 			emit_signal("pressed", hazard_id, direction)
 			_unpress()
 		if event.pressed and event.button_index == BUTTON_LEFT:
@@ -47,6 +49,10 @@ func _gui_input(event):
 
 
 func _press():
+	if disabled:
+		$ErrorSound.play()
+		return
+
 	mouse_pressed = true
 	use_pressed_rect.visible = true
 	use_unpressed_rect.visible = false
@@ -68,10 +74,23 @@ func _press():
 
 
 func _unpress():
+	if disabled:
+		return
+
 	mouse_pressed = false
 	use_unpressed_rect.visible = true
 	use_pressed_rect.visible = false
 	$ClickUp.play()
+
+
+func _disable():
+	material.set_shader_param("disabled", 1)
+	disabled = true
+
+
+func _enable():
+	material.set_shader_param("disabled", 0)
+	disabled = false
 
 
 func set_active():
@@ -101,7 +120,6 @@ func update_pitch_change(new_pitch_change):
 
 
 func _on_Events_hazard_tool_changed(new_hazard_id, _new_hazard_direction):
-	print("Changing that tool! ", new_hazard_id)
 	if new_hazard_id == hazard_id:
 		if not active_tool:
 			set_active()
@@ -111,3 +129,12 @@ func _on_Events_hazard_tool_changed(new_hazard_id, _new_hazard_direction):
 
 func _on_Events_deactivate_tools():
 	set_inactive()
+
+
+func _on_Events_disable_tools():
+	_disable()
+
+
+func _on_Events_enable_tools():
+	_enable()
+	

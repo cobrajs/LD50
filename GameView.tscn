@@ -126,7 +126,7 @@ text = "Traffic"
 margin_top = 32.0
 margin_right = 190.0
 margin_bottom = 62.0
-value = 19
+value = 0
 
 [node name="WorhtIt" parent="RightBar/MarginContainer/VBoxContainer" instance=ExtResource( 5 )]
 anchor_right = 0.0

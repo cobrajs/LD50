@@ -49,15 +49,11 @@ anchor_bottom = 1.0
 mouse_filter = 2
 color = Color( 0.870588, 0.933333, 0.839216, 1 )
 
-[node name="Hazards" type="TileMap" parent="."]
-tile_set = ExtResource( 1 )
-cell_size = Vector2( 32, 32 )
-format = 1
-
 [node name="SimulationPath" type="Path2D" parent="."]
 curve = SubResource( 2 )
 
 [node name="PathShower" type="TileMap" parent="."]
+visible = false
 tile_set = SubResource( 1 )
 cell_size = Vector2( 32, 32 )
 cell_custom_transform = Transform2D( 32, 0, 0, 32, 0, 0 )

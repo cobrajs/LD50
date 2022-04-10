@@ -16,6 +16,7 @@ func _ready():
 	
 	for hazard_tool in tools_holder.get_children():
 		hazard_tool.connect("pressed", self, "_on_hazard_tool_pressed")
+		hazard_tool._disable()
 	
 	Events.connect("enabled_hazards", self, "_on_Events_enabled_hazards")
 	if Hazards.enabled_hazards:
@@ -27,6 +28,11 @@ func _ready():
 
 	Events.connect("deactivate_tools", self, "_on_Events_deactivate_tools")
 
+	## Simulation events
+	Events.connect("traffic_updated", self, "_on_Events_traffic_updated")
+	Events.connect("budget_updated", self, "_on_Events_budget_updated")
+	Events.connect("resident_feelings_updated", self, "_on_Events_resident_feelings_updated")
+	Events.connect("worth_it_updated", self, "_on_Events_worth_it_updated")
 
 
 func _notification(what):
@@ -42,17 +48,6 @@ func _on_Events_updated_path_cost(cost: float):
 	path_cost_label.text = str(cost)
 
 
-func _process(delta):
-	traffic_bar.value += traffic_bar.step * delta * 10
-		
-	if traffic_bar.value >= traffic_bar.max_value:
-		traffic_bar.value = traffic_bar.min_value
-	
-	worth_it_bar.value = traffic_bar.value - traffic_bar.max_value / 2
-	residents_bar.value = traffic_bar.value - traffic_bar.max_value / 2
-	budget_bar.value = traffic_bar.value
-
-
 func _on_ToolButton_pressed():
 	Events.emit_signal("update_path")
 
@@ -66,7 +61,6 @@ func _on_Tools_pressed():
 
 
 func _on_hazard_tool_pressed(hazard_id: String, hazard_lane: int):
-	print("Pressed: ", hazard_id)
 	Hazards.set_current_tool(hazard_id, hazard_lane)
 
 
@@ -85,3 +79,19 @@ func _on_Events_enabled_hazards(enabled_hazards):
 
 func _on_Play_pressed():
 	Simulation.start()
+
+
+func _on_Events_traffic_updated(new_traffic_level):
+	traffic_bar.value = new_traffic_level
+
+
+func _on_Events_budget_updated(new_budget_level):
+	budget_bar.value = new_budget_level
+
+
+func _on_Events_resident_feelings_updated(new_resident_feelings_level):
+	residents_bar.value = new_resident_feelings_level
+
+
+func _on_Events_worth_it_updated(new_worth_it_level):
+	worth_it_bar.value = new_worth_it_level

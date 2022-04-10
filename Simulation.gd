@@ -8,17 +8,26 @@ var path: Path2D
 
 onready var Car = preload("res://simulation/Car.tscn")
 var cars
+var add_car_cooldown = 0
 
 ## Simulation state
 var playing: bool = false
+## Traffic level range is 0 to 1
+var traffic_level: float = 0.0
+var traffic_base_cost: int = 0
+## Worth It level range is -1 to 1
+var worth_it_level: float = 0.0
+## Resident Feelings level range is -1 to 1
+var resident_feelings_level: float = 0.0
+var resident_hazard_cost: float = 0.0
+var budget_amount: int = 100
+var budget_max: int = 100
 
 ## Residents
 var resident_paths: Array
 var resident_base_cost: int
 var resident_cost: int
 
-## Traffic level range is 0 to 1
-var traffic_level: float = 0.0
 
 func _ready():
 	Events.connect("send_car", self, "_on_Events_send_car")
@@ -34,25 +43,44 @@ func reset():
 
 ## Send out any Events for the simulation state
 func send_state_updates():
-	Events.emit_signal("traffic_updated", traffic_level)
+	Events.emit_signal("traffic_updated", traffic_level * 100)
+	Events.emit_signal("worth_it_updated", worth_it_level * 50)
+	Events.emit_signal("resident_feelings_updated", resident_feelings_level * 50)
 
 
 ##
 ## Simulation controls
 func start():
 	playing = true
+	Events.emit_signal("enable_tools")
 	reset()
 
 func step(delta):
 	if not playing:
 		return
 	
-	if path.get_child_count() > 0:
+	var car_count = path.get_child_count()
+	
+	if car_count > 0:
 		for car in path.get_children():
 			car.move_along(delta)
-	else:
+
+	if add_car_cooldown <= 0 and car_count < (worth_it_level + 0.5) * 4:
 		var car = Car.instance()
 		path.add_child(car)
+		add_car_cooldown = (worth_it_level + 0.5) * 4
+		print("Car should: ", (worth_it_level + 0.5) * 4)
+	
+	if add_car_cooldown > 0:
+		add_car_cooldown -= 1 * delta
+		print("Add Car: ", add_car_cooldown)
+	
+	traffic_level += 0.02 * delta
+	worth_it_level = ((traffic_base_cost + (traffic_base_cost * traffic_level)) - road.path_cost) / traffic_base_cost
+	resident_feelings_level = (resident_base_cost - resident_cost + resident_hazard_cost) / resident_base_cost
+	
+	send_state_updates()	
+
 		
 func pause():
 	playing = not playing
@@ -91,6 +119,12 @@ func add_hazard(hazard_id: String, direction_lane: int, cell: Vector2, tile_orie
 		
 		road.update_path()
 
+		budget_amount -= hazard_data["cost"]
+		resident_hazard_cost += hazard_data["residents"]
+		Events.emit_signal("budget_updated", budget_amount)
+		print("Budget: ", budget_amount, " Resident amount: ", resident_hazard_cost)
+
+
 ## Reset hazard variables. Should only be done after loading a new road because
 ##  the weights are added directly to the AStar graph in Road
 func reset_hazards():
@@ -103,6 +137,7 @@ func load_road(new_road: Road):
 	road = new_road
 	reset_hazards()
 	road.update_path()
+	traffic_base_cost = road.path_cost
 
 func get_path_cost():
 	return road.path_cost
